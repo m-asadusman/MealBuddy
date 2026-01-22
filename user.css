@@ -1,0 +1,173 @@
+*
+ { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { margin: 0; background: #f7f7f7; 
+}
+
+:root {
+    --pink: #6883db;
+    --gray: #777;
+  }
+  
+.header {
+  background: var(--pink);
+  color: white;
+  padding: 16px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.search {
+  padding: 16px;
+  background: white;
+}
+.search input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #f1f1f1;
+  font-size: 15px;
+}
+
+.categories {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  overflow-x: auto;
+}
+.category {
+  background: white;
+  padding: 10px 18px;
+  border-radius: 22px;
+  white-space: nowrap;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.restaurants {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+.restaurant {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform .2s;
+}
+.restaurant:hover { transform: translateY(-4px); }
+.restaurant img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.restaurant .info { padding: 14px; }
+.restaurant h3 { margin: 0 0 6px; }
+.restaurant p { margin: 0; color: var(--gray); font-size: 14px; }
+
+.menu {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.item {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.item .content {
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item h4 { margin: 0 0 4px; }
+.item span { color: var(--gray); font-size: 14px; }
+.item button {
+  background: var(--pink);
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cart {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+.cart button {
+  background: var(--pink);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.add-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-btn {
+  background: #d70f64;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(215, 15, 100, 0.3);
+}
+
+.add-btn:hover {
+  background: #b80d55;
+  transform: scale(1.05);
+}
+
+.qty-badge {
+  background: #fff;
+  color: #d70f64;
+  font-size: 13px;
+  font-weight: bold;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #d70f64;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.qty-badge.active {
+  display: flex;
+}
