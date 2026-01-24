@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+:root {
+  --mainColor: #eb5d9f;
+  --mainHover: #bb3875;
+  --bgColor: #030303;
+  --cardBg: #3f3f3f11;
+  --textColor: #e2e2e2;
+  --mutedText: #9a9a9a;
+  --borderColor: #2a2a2a;
+  --dividerColor: #2f2f2f;
+  --shadowColor: rgba(0, 0, 0, 0.4);
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Lexend', sans-serif;
+}
+
+body {
+  color: var(--textColor);
+  line-height: 1.6;
+  background: linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url("./assets/bg.jpg") center / cover no-repeat;
+}
+
+.heading{
+  text-align: center;
+  color: var(--mainColor);
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.card {
+  background: var(--cardBg);
+  border: 1px solid var(--borderColor);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 24px var(--shadowColor);
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.small {
+  max-width: 400px;
+}
+
+.card h1, .card h2 {
+  margin-bottom: 15px;
+  color: var(--textColor);
+}
+
+.topBar {
+  background: var(--cardBg);
+  padding: 15px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--borderColor);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topBar h1 {
+  font-size: 1.5rem;
+  color: var(--textColor);
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  background: var(--bgColor);
+  border: 1px solid var(--borderColor);
+  color: var(--textColor);
+  border-radius: 6px;
+  outline: none;
+  transition: var(--transition);
+}
+
+input:focus, select:focus {
+  border-color: var(--mainColor);
+}
+
+button {
+  cursor: pointer;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: var(--transition);
+  margin-top: 10px;
+}
+
+.primary, #loginBtn, #signupBtn, #createShopBtn, #addFoodBtn {
+  background: var(--mainColor);
+  color: white;
+}
+
+.primary:hover, #loginBtn:hover, #signupBtn:hover, #createShopBtn:hover, #addFoodBtn:hover {
+  background: var(--mainHover);
+  transform: translateY(-1px);
+}
+
+.secondary {
+  background: transparent;
+  border: 1px solid var(--mainColor);
+  color: var(--mainColor);
+}
+
+.secondary:hover {
+  background: var(--mainHover);
+  color: var(--textColor);
+}
+
+.logout {
+  background: transparent;
+  color: var(--mutedText);
+  font-size: 0.9rem;
+}
+
+.logout:hover {
+  color: var(--mainColor);
+}
+
+#shopList, #vendorList, #vendorContent {
+  padding: 20px 5%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.shop {
+  margin-top: 20px;
+}
+
+.food {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--dividerColor);
+  transition: var(--transition);
+}
+
+.food:last-child {
+  border-bottom: none;
+}
+
+.food:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.food button {
+  padding: 5px 15px;
+  font-size: 0.8rem;
+  background: var(--borderColor);
+  color: var(--textColor);
+}
+
+.food button:hover {
+  background: var(--mainColor);
+}
+
+.status {
+  color: var(--mutedText);
+  margin-bottom: 20px;
+}
+
+a {
+  color: var(--mainColor);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+
+
+#vendorList .card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+
+
+main {
+  min-height: 100vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url("./assets/bg.jpg") center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  text-align: center;
+  padding: 20px;
+}
+
+.logo {
+  font-size: 52px;
+  margin-bottom: 10px;
+}
+
+.i{
+  color: var(--mainColor);
+}
+
+.tagline {
+  font-size: 18px;
+  opacity: 0.85;
+  margin-bottom: 40px;
+}
+
+.actions button {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 8px;
+}
+
+@media (max-width: 600px) {
+  .logo {
+    font-size: 38px;
+  }
+
+  .actions button {
+    width: 100%;
+    margin: 8px 0;
+  }
+}

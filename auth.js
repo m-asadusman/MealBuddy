@@ -1,87 +1,107 @@
-import{
-    auth,
-    db,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    doc,
-    setDoc,
-    getDoc
-}from "./firebase.js";
-
+import {
+  auth,
+  db,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  doc,
+  setDoc,
+  getDoc
+} from "./firebase.js";
 
 const signupBtn = document.getElementById("signupBtn");
 
-if(signupBtn){
-    signupBtn.onclick = async ()=>{
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const role = document.getElementById("role").value;
+if (signupBtn) {
+  signupBtn.onclick = async () => {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
 
-        if(!name || !email || !password){
-            alert("Fill all fields");
-            return;
-        }
+    if (!name || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
 
-        try{
-            const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            const uid = userCred.user.uid;
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
 
-            await setDoc(doc(db, "users", uid), {
-                name,
-                email,
-                role,
-                verified: role === "vendor" ? false : true,
-                createdAt: Date.now()
-            });
+    signupBtn.disabled = true;
+    signupBtn.textContent = "Creating account...";
 
-            alert("Account created!");
-            window.location.href = "./login.html";
+    try {
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-        }catch(err){
-            alert(err.message);
-        }
-    };
+      const uid = userCred.user.uid;
+
+      await setDoc(doc(db, "users", uid), {
+        name,
+        email,
+        role,
+        verified: role === "vendor" ? false : true,
+        createdAt: Date.now()
+      });
+
+      alert("Account created successfully");
+      window.location.href = "./login.html";
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      signupBtn.disabled = false;
+      signupBtn.textContent = "Sign up";
+    }
+  };
 }
-
 
 const loginBtn = document.getElementById("loginBtn");
 
-if(loginBtn){
-    loginBtn.onclick = async ()=>{
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+if (loginBtn) {
+  loginBtn.onclick = async () => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-        if(!email || !password){
-            alert("Enter email and password");
-            return;
-        }
+    if (!email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
 
-        try{
-            const userCred = await signInWithEmailAndPassword(auth, email, password);
-            const uid = userCred.user.uid;
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
 
-            const snap = await getDoc(doc(db, "users", uid));
+    try {
+      const userCred = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-            if(!snap.exists()){
-                alert("User data not found");
-                return;
-            }
+      const uid = userCred.user.uid;
+      const snap = await getDoc(doc(db, "users", uid));
 
-            const user = snap.data();
+      if (!snap.exists()) {
+        alert("User data not found");
+        return;
+      }
 
-            if(user.role === "admin"){
-                window.location.href = "./adminDashboard.html";
-            }
-            else if(user.role === "vendor"){
-                window.location.href = "./vendorDashboard.html";
-            }
-            else{
-                window.location.href = "./home.html";
-            }
+      const user = snap.data();
 
-        } catch(err){
-            alert(err.message);
-        }
-    };
+      if (user.role === "admin") {
+        window.location.href = "./admin.html";
+      } else if (user.role === "vendor") {
+        window.location.href = "./vendor.html";
+      } else {
+        window.location.href = "./main.html";
+      }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Login";
+    }
+  };
 }
