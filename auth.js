@@ -9,6 +9,12 @@ import {
 } from "./firebase.js";
 
 const signupBtn = document.getElementById("signupBtn");
+const emailInput = document.getElementById("email");
+const savedEmail = localStorage.getItem("prefillEmail");
+
+if (emailInput && savedEmail) {
+  emailInput.value = savedEmail;
+}
 
 if (signupBtn) {
   signupBtn.onclick = async () => {
@@ -47,8 +53,10 @@ if (signupBtn) {
         createdAt: Date.now()
       });
 
+      localStorage.setItem("prefillEmail", email);
       alert("Account created successfully");
       window.location.href = "./login.html";
+
     } catch (err) {
       alert(err.message);
     } finally {
@@ -89,6 +97,8 @@ if (loginBtn) {
       }
 
       const user = snap.data();
+      
+      localStorage.removeItem("prefillEmail");
 
       if (user.role === "admin") {
         window.location.href = "./admin.html";

@@ -12,8 +12,12 @@ import {
 } from "./firebase.js";
 
 const vendorContent = document.getElementById("vendorContent");
+const loader = document.getElementById("loader");
 
 onAuthStateChanged(auth, async (user) => {
+  loader.style.display = "flex";
+  vendorContent.style.display = "none";
+
   if (!user) {
     window.location.href = "./login.html";
     return;
@@ -30,6 +34,9 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   if (!vendor.verified) {
+    loader.style.display = "none";
+    vendorContent.style.display = "block";
+    vendorContent.className = 'card'
     vendorContent.innerHTML = `
       <h2>Account Under Review</h2>
       <p class="status">Waiting for admin approval.</p>
@@ -45,6 +52,9 @@ onAuthStateChanged(auth, async (user) => {
   const shopSnap = await getDocs(shopQuery);
 
   if (shopSnap.empty) {
+    loader.style.display = "none";
+    vendorContent.style.display = "block";
+
     vendorContent.innerHTML = `
       <div class="card">
         <h2>Create Your Shop</h2>
@@ -87,10 +97,13 @@ onAuthStateChanged(auth, async (user) => {
       <input id="foodPrice" type="number" placeholder="Price">
       <button id="addFoodBtn">Add Food</button>
 
-      <h3>Your Foods</h3>
+      <h3 style="margin-top:15px">Your Foods</h3>
       <div id="foodList"></div>
     </div>
   `;
+
+  loader.style.display = "none";
+  vendorContent.style.display = "block";
 
   document.getElementById("addFoodBtn").onclick = async () => {
     const name = document.getElementById("foodName").value.trim();
@@ -116,7 +129,11 @@ onAuthStateChanged(auth, async (user) => {
 
   async function loadFoods() {
     const foodList = document.getElementById("foodList");
-    foodList.innerHTML = "Loading...";
+    foodList.innerHTML = `
+      <div class="spinner-wrap">
+        <div class="spinner"></div>
+      </div>
+    `;
 
     const foodQuery = query(
       collection(db, "foods"),
@@ -138,3 +155,4 @@ onAuthStateChanged(auth, async (user) => {
 
   loadFoods();
 });
+

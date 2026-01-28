@@ -12,6 +12,7 @@ import {
 } from "./firebase.js";
 
 const shopList = document.getElementById("shopList");
+const loader = document.getElementById("loader");
 let currentUserId = null;
 
 onAuthStateChanged(auth, async (user) => {
@@ -34,6 +35,9 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 async function loadShopsWithFoods() {
+  loader.style.display = "flex";
+  shopList.style.display = "none";
+
   shopList.innerHTML = "";
 
   const shopSnap = await getDocs(collection(db, "shops"));
@@ -71,6 +75,8 @@ async function loadShopsWithFoods() {
 
     shopList.appendChild(shopDiv);
   }
+  loader.style.display = "none";
+  shopList.style.display = "block";
 }
 
 async function addToCart(foodId) {

@@ -23,12 +23,14 @@
 body {
   color: var(--textColor);
   line-height: 1.6;
-  background: linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url("./assets/bg.jpg") center / cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.8),rgba(0, 0, 0, 0.8)), url("./assets/bg.jpg") center / cover no-repeat;
+  background-color: #000000;
 }
 
 .heading{
   text-align: center;
   color: var(--mainColor);
+  text-shadow: 0 0 50px #ffffff;
 }
 
 .container {
@@ -44,7 +46,7 @@ body {
   border: 1px solid var(--borderColor);
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 8px 24px var(--shadowColor);
+  box-shadow: 0 0 5px 2px #000000;
   margin-bottom: 20px;
   width: 100%;
 }
@@ -67,7 +69,10 @@ body {
   border-bottom: 1px solid var(--borderColor);
   position: sticky;
   top: 0;
+  box-shadow: 0 0 5px 2px #000000;
   z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .topBar h1 {
@@ -104,6 +109,7 @@ button {
 .primary, #loginBtn, #signupBtn, #createShopBtn, #addFoodBtn {
   background: var(--mainColor);
   color: white;
+  box-shadow: 0 0 5px 2px #101010;
 }
 
 .primary:hover, #loginBtn:hover, #signupBtn:hover, #createShopBtn:hover, #addFoodBtn:hover {
@@ -115,10 +121,11 @@ button {
   background: transparent;
   border: 1px solid var(--mainColor);
   color: var(--mainColor);
+  box-shadow: 0 0 5px 2px #101010;
 }
 
 .secondary:hover {
-  background: var(--mainHover);
+  background: var(--mainColor);
   color: var(--textColor);
 }
 
@@ -160,14 +167,15 @@ button {
 }
 
 .food button {
-  padding: 5px 15px;
-  font-size: 0.8rem;
-  background: var(--borderColor);
+  box-shadow: 0 0 5px 2px #101010;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  background: var(--mainColor);
   color: var(--textColor);
 }
 
 .food button:hover {
-  background: var(--mainColor);
+  background: var(--mainHover);
 }
 
 .status {
@@ -185,16 +193,12 @@ a:hover {
   text-decoration: underline;
 }
 
-
-
 #vendorList .card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
-
-
 
 main {
   min-height: 100vh;
@@ -212,6 +216,7 @@ main {
 .logo {
   font-size: 52px;
   margin-bottom: 10px;
+  text-shadow: 0 0 50px #ffffff;
 }
 
 .i{
@@ -232,7 +237,38 @@ main {
   margin: 0 8px;
 }
 
+.spinner-wrap {
+  min-height: 30vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--borderColor);
+  border-top-color: var(--mainColor);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 600px) {
+
+  main{
+    margin-top: -400px;
+  }
+
+  .small{
+    margin-top: -520px;
+  }
+
   .logo {
     font-size: 38px;
   }
