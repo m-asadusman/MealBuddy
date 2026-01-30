@@ -8,7 +8,10 @@ import {
   addDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  deleteDoc, 
+  updateDoc  
+
 } from "./firebase.js";
 
 const vendorContent = document.getElementById("vendorContent");
@@ -68,7 +71,11 @@ onAuthStateChanged(auth, async (user) => {
       const shopName = document.getElementById("shopName").value.trim();
 
       if (!shopName) {
-        alert("Enter shop name");
+        Swal.fire({
+          title: "Enter Shop name!",
+          icon: "error",
+          draggable: false
+        });
         return;
       }
 
@@ -98,7 +105,8 @@ onAuthStateChanged(auth, async (user) => {
       <button id="addFoodBtn">Add Food</button>
 
       <h3 style="margin-top:15px">Your Foods</h3>
-      <div id="foodList"></div>
+      <div id="foodList">
+      </div>
     </div>
   `;
 
@@ -110,7 +118,11 @@ onAuthStateChanged(auth, async (user) => {
     const price = Number(document.getElementById("foodPrice").value);
 
     if (!name || price <= 0) {
-      alert("Enter valid food data");
+      Swal.fire({
+        title: "Enter a valid data!",
+        icon: "error",
+        draggable: false
+      });
       return;
     }
 
@@ -150,9 +162,39 @@ onAuthStateChanged(auth, async (user) => {
       div.classList.add("food");
       div.textContent = `${food.name} - Rs ${food.price}`;
       foodList.appendChild(div);
-    });
-  }
+
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.style.marginLeft = "10px";
+    editBtn.onclick = async () => {
+      const newName = prompt("Edit Food Name:", food.name);
+      const newPrice = prompt("Edit Price:", food.price);
+
+   if (newName && newPrice > 0) {
+     await updateDoc(doc(db, "foods", foodId), {
+       name: newName,
+       price: Number(newPrice)
+     });
+     loadFoods();
+   }
+ };
+
+ const deleteBtn = document.createElement("button");
+ deleteBtn.textContent = "Delete";
+ deleteBtn.style.marginLeft = "5px";
+ deleteBtn.onclick = async () => {
+   if (confirm("Are you sure?")) {
+     await deleteDoc(doc(db, "foods", foodId));
+     loadFoods();
+   }
+ };
+
+ div.appendChild(editBtn);
+ div.appendChild(deleteBtn);
+ foodList.appendChild(div);
+ });
+}
 
   loadFoods();
 });
-

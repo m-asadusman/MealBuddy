@@ -24,12 +24,13 @@ if (signupBtn) {
     const role = document.getElementById("role").value;
 
     if (!name || !email || !password) {
-      alert("Please fill all fields");
-      return;
+      Swal.fire("Plz fill all fieald");
+       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+      Swal.fire("Password Must Be At Least 6 Character");
+;
       return;
     }
 
@@ -54,12 +55,19 @@ if (signupBtn) {
       });
 
       localStorage.setItem("prefillEmail", email);
-      alert("Account created successfully");
+      Swal.fire({
+        title: "Account Created Successfull",
+        icon: "success",
+        draggable: true
+      });
       window.location.href = "./login.html";
 
     } catch (err) {
-      alert(err.message);
-    } finally {
+      Swal.fire({
+        icon: "error",
+        title: err.message,
+      });}
+       finally {
       signupBtn.disabled = false;
       signupBtn.textContent = "Sign up";
     }
@@ -74,8 +82,10 @@ if (loginBtn) {
     const password = document.getElementById("password").value;
 
     if (!email || !password) {
-      alert("Please fill all fields");
-      return;
+      Swal.fire({
+        icon: "question",
+        title: "Please fill all fieald",
+      });return;
     }
 
     loginBtn.disabled = true;
@@ -92,7 +102,10 @@ if (loginBtn) {
       const snap = await getDoc(doc(db, "users", uid));
 
       if (!snap.exists()) {
-        alert("User data not found");
+        Swal.fire({
+          icon: "error",
+          title: "user data not found",
+        });
         return;
       }
 
@@ -108,7 +121,10 @@ if (loginBtn) {
         window.location.href = "./main.html";
       }
     } catch (err) {
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        title: err.message,
+      });
     } finally {
       loginBtn.disabled = false;
       loginBtn.textContent = "Login";

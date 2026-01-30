@@ -27,7 +27,11 @@ onAuthStateChanged(auth, async (user) => {
   if (!snap.exists()) return;
 
   if (snap.data().role !== "user") {
-    alert("Access denied");
+    Swal.fire({
+      title: "Access Denied!",
+      icon: "error",
+      draggable: false
+    });
     return;
   }
 
@@ -89,6 +93,8 @@ async function addToCart(foodId) {
   cart[foodId] = (cart[foodId] || 0) + 1;
   await setDoc(cartRef, cart);
 
-  alert("Added to cart");
+  Swal.fire({
+    title: "Added to cart!",
+  });
 }
 
