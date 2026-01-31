@@ -23,7 +23,7 @@ onAuthStateChanged(auth, async (user) => {
 
   const snap = await getDoc(doc(db, "users", user.uid));
   if (!snap.exists() || snap.data().role !== "admin") {
-    alert("Access denied");
+    alert('Access Denied')
     window.location.href = "./main.html";
     return;
   }
@@ -54,21 +54,33 @@ async function loadVendors() {
         <strong>${user.name}</strong> (${user.email})<br>
         Status: ${user.verified ? "Verified" : "Pending"}
       `;
+      
+      div.appendChild(document.createElement("br"));
 
       if (!user.verified) {
-        const btn = document.createElement("button");
-        btn.className = "primary"
-        btn.textContent = "Verify";
+        const verifyBtn = document.createElement("button");
+        verifyBtn.className = "primary";
+        verifyBtn.textContent = "Verify";
 
-        btn.onclick = async () => {
+        verifyBtn.onclick = async () => {
           await updateDoc(doc(db, "users", docSnap.id), {
             verified: true
           });
           loadVendors();
         };
+        div.appendChild(verifyBtn);
+      } else {
+        const unverifyBtn = document.createElement("button");
+        unverifyBtn.className = "secondary";
+        unverifyBtn.textContent = "Unverify";
 
-        div.appendChild(document.createElement("br"));
-        div.appendChild(btn);
+        unverifyBtn.onclick = async () => {
+          await updateDoc(doc(db, "users", docSnap.id), {
+            verified: false 
+          });
+          loadVendors();
+        };
+        div.appendChild(unverifyBtn);
       }
 
       vendorList.appendChild(div);
