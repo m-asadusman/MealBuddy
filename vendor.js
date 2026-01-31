@@ -38,8 +38,8 @@ onAuthStateChanged(auth, async (user) => {
     vendorContent.style.display = "block";
     vendorContent.className = 'card'
     vendorContent.innerHTML = `
-      <h2>Account Under Review</h2>
-      <p class="status">Waiting for admin approval.</p>
+      <h2 class="statusHead">Account Under Review</h2>
+      <p class="status statusV">Waiting for admin approval.</p>
     `;
     return;
   }

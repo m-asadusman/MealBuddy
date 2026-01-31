@@ -242,9 +242,19 @@ button {
   border-radius: 10px;
 }
 
+.statusHead{
+  color: var(--textColor) !important;
+  margin-top: 40px;
+}
+
 .status {
   color: var(--mutedText);
   margin-bottom: 20px;
+}
+
+.statusV{
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 a {
