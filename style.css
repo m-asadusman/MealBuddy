@@ -23,11 +23,11 @@
 body {
   color: var(--textColor);
   line-height: 1.6;
-  background: linear-gradient(rgba(0, 0, 0, 0.8),rgba(0, 0, 0, 0.8)), url("./assets/bg.jpg") center / cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url("./assets/bg.jpg") center / cover;
   background-color: #000000;
 }
 
-.heading{
+.heading {
   text-align: center;
   color: var(--mainColor);
   text-shadow: 0 0 50px #ffffff;
@@ -55,9 +55,14 @@ body {
   max-width: 400px;
 }
 
-.card h1, .card h2 {
+.card h1,
+.card h2 {
   margin-bottom: 15px;
   color: var(--textColor);
+}
+
+.cardAdmin strong{
+  display: none;
 }
 
 .topBar {
@@ -80,7 +85,19 @@ body {
   color: var(--textColor);
 }
 
-input, select {
+#shopList h2,
+#vendorContent h2 {
+  color: var(--mainColor);
+  text-align: center;
+  text-shadow: 0 0 30px #ffffff;
+}
+
+#vendorContent h3 {
+  text-align: center;
+}
+
+input,
+select {
   width: 100%;
   padding: 12px 15px;
   margin: 10px 0;
@@ -92,7 +109,8 @@ input, select {
   transition: var(--transition);
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   border-color: var(--mainColor);
 }
 
@@ -106,13 +124,21 @@ button {
   margin-top: 10px;
 }
 
-.primary, #loginBtn, #signupBtn, #createShopBtn, #addFoodBtn {
+.primary,
+#loginBtn,
+#signupBtn,
+#createShopBtn,
+#addFoodBtn {
   background: var(--mainColor);
   color: white;
   box-shadow: 0 0 5px 2px #101010;
 }
 
-.primary:hover, #loginBtn:hover, #signupBtn:hover, #createShopBtn:hover, #addFoodBtn:hover {
+.primary:hover,
+#loginBtn:hover,
+#signupBtn:hover,
+#createShopBtn:hover,
+#addFoodBtn:hover {
   background: var(--mainHover);
   transform: translateY(-1px);
 }
@@ -139,7 +165,9 @@ button {
   color: var(--mainColor);
 }
 
-#shopList, #vendorList, #vendorContent {
+#shopList,
+#vendorList,
+#vendorContent {
   padding: 20px 5%;
   max-width: 1200px;
   margin: auto;
@@ -163,7 +191,7 @@ button {
 }
 
 .food:hover {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .food button {
@@ -176,6 +204,42 @@ button {
 
 .food button:hover {
   background: var(--mainHover);
+}
+
+#addFoodBtn{
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.foodAlign1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.foodAlign1 p {
+  font-size: 18px;
+}
+
+.foodAlign2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+.foodAlign2 strong {
+  color: var(--mainColor);
+  font-size: 18px;
+  text-shadow: 0 0 25px #ffffff;
+}
+
+.foodImg {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .status {
@@ -202,7 +266,7 @@ a:hover {
 
 main {
   min-height: 100vh;
-  background: linear-gradient(rgba(0, 0, 0, 0.7),rgba(0, 0, 0, 0.7)), url("./assets/bg.jpg") center / cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("./assets/bg.jpg") center / cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,7 +283,7 @@ main {
   text-shadow: 0 0 50px #ffffff;
 }
 
-.i{
+.i {
   color: var(--mainColor);
 }
 
@@ -246,7 +310,7 @@ main {
   max-width: 70%;
 }
 
-.swal2-icon{
+.swal2-icon {
   transform: scale(0.75);
 }
 
@@ -287,11 +351,20 @@ main {
 
 @media (max-width: 600px) {
 
-  main{
+  .heading{
+    font-size: 28px;
+  }
+
+  #shopList h2{
+    font-size: 23px;
+    margin-top: 10px;
+  }
+
+  main {
     margin-top: -400px;
   }
 
-  .small{
+  .small {
     margin-top: -520px;
   }
 
@@ -299,20 +372,54 @@ main {
     font-size: 38px;
   }
 
+  #shopList, #vendorList, #vendorContent {
+    padding: 10px 3%;
+  }
+
+  .cardMain {
+    padding: 5px;
+  }
+
+  .cardAdmin{
+    padding: 20px;
+  }
+
+  .cardVendor{
+    padding: 15px;
+  }
+
   .actions button {
     width: 100%;
     margin: 8px 0;
   }
 
-  .swal2-popup{
+  .swal2-popup {
     font-size: 16px;
   }
 
-  .swal2-confirm{
+  .swal2-confirm {
     font-size: 13px;
   }
 
-  .swal2-icon{
-  transform: scale(0.65);
-}
+  .swal2-icon {
+    transform: scale(0.65);
+  }
+
+  .foodImg {
+    width: 70px;
+    height: 70px;
+    border-radius: 7px;
+  }
+
+  .foodAlign1 {
+    gap: 10px;
+  }
+
+  .foodAlign1 p {
+    font-size: 16px;
+  }
+
+  .foodAlign2 strong {
+    font-size: 16px;
+  }
 }

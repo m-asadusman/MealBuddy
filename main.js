@@ -51,7 +51,7 @@ async function loadShopsWithFoods() {
     const shopId = shopDoc.id;
 
     const shopDiv = document.createElement("div");
-    shopDiv.classList.add("card", "shop");
+    shopDiv.classList.add("card", "shop", "cardMain");
     shopDiv.innerHTML = `<h2>${shop.name}</h2>`;
 
     const foodQuery = query(
@@ -66,9 +66,20 @@ async function loadShopsWithFoods() {
 
       const foodDiv = document.createElement("div");
       foodDiv.classList.add("food");
+
+      const placeholder = './assets/fp.png';
+      const imgSrc = food.imageURL || placeholder;
+
       foodDiv.innerHTML = `
-        ${food.name} - Rs ${food.price}
+        <div class="foodAlign1">
+        <img class="foodImg" src="${imgSrc}" alt="food"/>
+        <p> ${food.name}</p>
+        </div>
+        <div class="foodAlign2">
+        <strong> Rs ${food.price} </strong>
         <button>Add</button>
+        </div>
+        
       `;
 
       foodDiv.querySelector("button").onclick = () =>

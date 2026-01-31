@@ -93,12 +93,14 @@ onAuthStateChanged(auth, async (user) => {
   const shopId = shopDoc.id;
 
   vendorContent.innerHTML = `
-    <div class="card">
+    <div class="card cardVendor">
       <h2>${shop.name}</h2>
 
       <h3>Add Food</h3>
       <input id="foodName" placeholder="Food name">
       <input id="foodPrice" type="number" placeholder="Price">
+      <input id="foodImage" type="file" accept="image/*">
+      
       <button id="addFoodBtn">Add Food</button>
 
       <h3 style="margin-top:15px">Your Foods</h3>
@@ -112,6 +114,7 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById("addFoodBtn").onclick = async () => {
     const name = document.getElementById("foodName").value.trim();
     const price = Number(document.getElementById("foodPrice").value);
+    const image = document.getElementById("foodImage").files[0]
 
     if (!name || price <= 0) {
       Swal.fire({
@@ -122,15 +125,57 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
+    let imageURL = "";
+
+    if (image) {
+      loader.style.display = "flex";
+      vendorContent.style.display = "none";
+
+      try {
+        const fd = new FormData();
+        fd.append("file", image);
+        fd.append("upload_preset", "default");
+
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/dwcrdqvyr/image/upload",
+          {
+            method: "POST",
+            body: fd
+          }
+        );
+
+        const imgData = await res.json();
+
+        if (!imgData.secure_url) {
+          throw new Error("Upload failed");
+        }
+
+        imageURL = imgData.secure_url;
+
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          text: "Image upload failed",
+          confirmButtonText: "OK"
+        });
+        return;
+      } finally {
+        loader.style.display = "none";
+        vendorContent.style.display = "block";
+      }
+    }
+
     await addDoc(collection(db, "foods"), {
       name,
       price,
+      imageURL,
       shopId,
       createdAt: Date.now()
     });
 
     document.getElementById("foodName").value = "";
     document.getElementById("foodPrice").value = "";
+    document.getElementById("foodImage").value = "";
 
     loadFoods();
   };
@@ -155,8 +200,19 @@ onAuthStateChanged(auth, async (user) => {
       const food = docSnap.data();
 
       const div = document.createElement("div");
+
       div.classList.add("food");
-      div.textContent = `${food.name} - Rs ${food.price}`;
+
+      const placeholder = './assets/fp.png';
+      const imgSrc = food.imageURL || placeholder;
+
+      div.innerHTML = `<div class="foodAlign1">
+        <img class="foodImg" src="${imgSrc}" alt="food"/>
+        <p> ${food.name}</p>
+        </div>
+        <div class="foodAlign2">
+        <strong> Rs ${food.price} </strong>
+        </div>`;
       foodList.appendChild(div);
     });
   }

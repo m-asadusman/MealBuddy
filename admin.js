@@ -52,7 +52,7 @@ async function loadVendors() {
 
     if (user.role === "vendor") {
       const div = document.createElement("div");
-      div.classList.add("card");
+      div.classList.add("card", "cardAdmin");
 
       div.innerHTML = `
         <strong>${user.name}</strong> (${user.email})<br>
@@ -63,7 +63,7 @@ async function loadVendors() {
 
       if (!user.verified) {
         const verifyBtn = document.createElement("button");
-        verifyBtn.className = "primary";
+        verifyBtn.className = "primary prim";
         verifyBtn.textContent = "Verify";
 
         verifyBtn.onclick = async () => {
@@ -75,7 +75,7 @@ async function loadVendors() {
         div.appendChild(verifyBtn);
       } else {
         const unverifyBtn = document.createElement("button");
-        unverifyBtn.className = "secondary";
+        unverifyBtn.className = "secondary sec";
         unverifyBtn.textContent = "Unverify";
 
         unverifyBtn.onclick = async () => {
