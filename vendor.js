@@ -68,7 +68,11 @@ onAuthStateChanged(auth, async (user) => {
       const shopName = document.getElementById("shopName").value.trim();
 
       if (!shopName) {
-        alert("Enter shop name");
+        Swal.fire({
+          icon: "warning",
+          text: "Enter shop name",
+          confirmButtonText: "OK"
+        });
         return;
       }
 
@@ -110,7 +114,11 @@ onAuthStateChanged(auth, async (user) => {
     const price = Number(document.getElementById("foodPrice").value);
 
     if (!name || price <= 0) {
-      alert("Enter valid food data");
+      Swal.fire({
+        icon: "warning",
+        text: "Enter valid food data",
+        confirmButtonText: "OK"
+      });
       return;
     }
 

@@ -23,7 +23,11 @@ onAuthStateChanged(auth, async (user) => {
 
   const snap = await getDoc(doc(db, "users", user.uid));
   if (!snap.exists() || snap.data().role !== "admin") {
-    alert('Access Denied')
+    Swal.fire({
+        icon: "error",
+        text: "Access Denied",
+        confirmButtonText: "OK"
+      });
     window.location.href = "./main.html";
     return;
   }

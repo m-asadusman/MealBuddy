@@ -24,12 +24,20 @@ if (signupBtn) {
     const role = document.getElementById("role").value;
 
     if (!name || !email || !password) {
-      alert("Please fill all fields");
+      Swal.fire({
+        icon: "warning",
+        text: "Please fill all the fields",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+      Swal.fire({
+        icon: "warning",
+        text: "Password must be atleast 6 characters",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
@@ -54,11 +62,19 @@ if (signupBtn) {
       });
 
       localStorage.setItem("prefillEmail", email);
-      alert("Account created successfully");
+      Swal.fire({
+        icon: "success",
+        text: "Account created successfully",
+        confirmButtonText: "OK"
+      });
       window.location.href = "./login.html";
 
     } catch (err) {
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        text: err.message,
+        confirmButtonText: "OK"
+      });
     } finally {
       signupBtn.disabled = false;
       signupBtn.textContent = "Sign up";
@@ -74,7 +90,11 @@ if (loginBtn) {
     const password = document.getElementById("password").value;
 
     if (!email || !password) {
-      alert("Please fill all fields");
+      Swal.fire({
+        icon: "warning",
+        text: "Please fill all the fields",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
@@ -92,12 +112,16 @@ if (loginBtn) {
       const snap = await getDoc(doc(db, "users", uid));
 
       if (!snap.exists()) {
-        alert("User data not found");
+        Swal.fire({
+          icon: "error",
+          text: "User data not found",
+          confirmButtonText: "OK"
+        });
         return;
       }
 
       const user = snap.data();
-      
+
       localStorage.removeItem("prefillEmail");
 
       if (user.role === "admin") {
@@ -108,7 +132,11 @@ if (loginBtn) {
         window.location.href = "./main.html";
       }
     } catch (err) {
-      alert(err.message);
+      Swal.fire({
+        icon: "error",
+        text: err.message,
+        confirmButtonText: "OK"
+      });
     } finally {
       loginBtn.disabled = false;
       loginBtn.textContent = "Login";
