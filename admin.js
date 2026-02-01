@@ -24,10 +24,10 @@ onAuthStateChanged(auth, async (user) => {
   const snap = await getDoc(doc(db, "users", user.uid));
   if (!snap.exists() || snap.data().role !== "admin") {
     Swal.fire({
-        icon: "error",
-        text: "Access Denied",
-        confirmButtonText: "OK"
-      });
+      icon: "error",
+      text: "Access Denied",
+      confirmButtonText: "OK"
+    });
     window.location.href = "./main.html";
     return;
   }
@@ -58,7 +58,7 @@ async function loadVendors() {
         <strong>${user.name}</strong> (${user.email})<br>
         Status: ${user.verified ? "Verified" : "Pending"}
       `;
-      
+
       div.appendChild(document.createElement("br"));
 
       if (!user.verified) {
@@ -67,11 +67,25 @@ async function loadVendors() {
         verifyBtn.textContent = "Verify";
 
         verifyBtn.onclick = async () => {
-          await updateDoc(doc(db, "users", docSnap.id), {
-            verified: true
-          });
-          loadVendors();
+          verifyBtn.disabled = true;
+          verifyBtn.innerText = "Verifying...";
+
+          try {
+            await updateDoc(doc(db, "users", docSnap.id), {
+              verified: true
+            });
+            loadVendors();
+          } catch (err) {
+            Swal.fire({
+              icon: "error",
+              text: "Failed to verify vendor"
+            });
+          } finally {
+            verifyBtn.disabled = false;
+            verifyBtn.innerText = "Verify";
+          }
         };
+
         div.appendChild(verifyBtn);
       } else {
         const unverifyBtn = document.createElement("button");
@@ -79,11 +93,25 @@ async function loadVendors() {
         unverifyBtn.textContent = "Unverify";
 
         unverifyBtn.onclick = async () => {
-          await updateDoc(doc(db, "users", docSnap.id), {
-            verified: false 
-          });
-          loadVendors();
+          unverifyBtn.disabled = true;
+          unverifyBtn.innerText = "Unverifying...";
+
+          try {
+            await updateDoc(doc(db, "users", docSnap.id), {
+              verified: false
+            });
+            loadVendors();
+          } catch (err) {
+            Swal.fire({
+              icon: "error",
+              text: "Failed to unverify vendor"
+            });
+          } finally {
+            unverifyBtn.disabled = false;
+            unverifyBtn.innerText = "Unverify";
+          }
         };
+
         div.appendChild(unverifyBtn);
       }
 

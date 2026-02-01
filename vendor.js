@@ -8,7 +8,8 @@ import {
   addDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  deleteDoc
 } from "./firebase.js";
 
 const vendorContent = document.getElementById("vendorContent");
@@ -198,6 +199,7 @@ onAuthStateChanged(auth, async (user) => {
 
     foodSnap.forEach(docSnap => {
       const food = docSnap.data();
+      const foodId = docSnap.id
 
       const div = document.createElement("div");
 
@@ -212,9 +214,42 @@ onAuthStateChanged(auth, async (user) => {
         </div>
         <div class="foodAlign2">
         <strong> Rs ${food.price} </strong>
+        <button class="deleteBtn" data-id="${foodId}">Delete</button>
         </div>`;
+
+      const deleteBtn = div.querySelector(".deleteBtn");
+      deleteBtn.onclick = () => deleteFood(foodId);
+
       foodList.appendChild(div);
     });
+  }
+
+  async function deleteFood(foodId) {
+    const confirm = await Swal.fire({
+      text: "Delete food?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel"
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await deleteDoc(doc(db, "foods", foodId));
+
+      Swal.fire({
+        icon: "success",
+        text: "Food deleted"
+      });
+
+      loadFoods();
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        text: "Failed to delete food"
+      });
+    }
   }
 
   loadFoods();

@@ -336,6 +336,17 @@ main {
   background: var(--mainHover) !important;
 }
 
+.swal2-cancel {
+  background: #fff !important;
+  color: var(--mainColor) !important;
+  border-radius: 6px !important;
+  padding: 10px 24px !important;
+  font-size: 15px;
+}
+
+.swal2-cancel:hover {
+  background: #d8b7c6 !important;
+}
 
 .spinner-wrap {
   min-height: 30vh;

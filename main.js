@@ -28,9 +28,9 @@ onAuthStateChanged(auth, async (user) => {
 
   if (snap.data().role !== "user") {
     Swal.fire({
-    icon: "error",
-    text: "Access Denied",
-    confirmButtonText: "OK"
+      icon: "error",
+      text: "Access Denied",
+      confirmButtonText: "OK"
     });
     return;
   }
@@ -50,16 +50,17 @@ async function loadShopsWithFoods() {
     const shop = shopDoc.data();
     const shopId = shopDoc.id;
 
-    const shopDiv = document.createElement("div");
-    shopDiv.classList.add("card", "shop", "cardMain");
-    shopDiv.innerHTML = `<h2>${shop.name}</h2>`;
-
     const foodQuery = query(
       collection(db, "foods"),
       where("shopId", "==", shopId)
     );
-
     const foodSnap = await getDocs(foodQuery);
+
+    if (foodSnap.empty) continue
+
+    const shopDiv = document.createElement("div");
+    shopDiv.classList.add("card", "shop", "cardMain");
+    shopDiv.innerHTML = `<h2>${shop.name}</h2>`;
 
     foodSnap.forEach(foodDoc => {
       const food = foodDoc.data();
@@ -82,33 +83,48 @@ async function loadShopsWithFoods() {
         
       `;
 
-      foodDiv.querySelector("button").onclick = () =>
-        addToCart(foodDoc.id);
+      const addBtn = foodDiv.querySelector("button");
+      addBtn.onclick = () => addToCart(foodDoc.id, addBtn);
 
       shopDiv.appendChild(foodDiv);
     });
 
     shopList.appendChild(shopDiv);
-  }
+  } 
   loader.style.display = "none";
   shopList.style.display = "block";
 }
 
-async function addToCart(foodId) {
-  const cartRef = doc(db, "carts", currentUserId);
-  const cartSnap = await getDoc(cartRef);
+async function addToCart(foodId, button) {
+  button.disabled = true;
+  button.innerText = "Adding...";
 
-  let cart = {};
-  if (cartSnap.exists()) cart = cartSnap.data();
+  try {
+    const cartRef = doc(db, "carts", currentUserId);
+    const cartSnap = await getDoc(cartRef);
 
-  cart[foodId] = (cart[foodId] || 0) + 1;
-  await setDoc(cartRef, cart);
+    let cart = {};
+    if (cartSnap.exists()) cart = cartSnap.data();
 
-  Swal.fire({
-  icon: "success",
-  text: "Added to cart",
-  confirmButtonText: "OK"
-  });
+    cart[foodId] = (cart[foodId] || 0) + 1;
+    await setDoc(cartRef, cart);
 
+    Swal.fire({
+      icon: "success",
+      text: "Added to cart",
+      timer: 1000,
+      showConfirmButton: false
+    });
+
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      text: "Failed to add item"
+    });
+  } finally {
+    button.disabled = false;
+    button.innerText = "Add";
+  }
 }
+
 
