@@ -19,7 +19,8 @@ import {
     addDoc,
     query,
     where,
-    deleteDoc
+    deleteDoc,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -50,5 +51,6 @@ export {
     addDoc,
     query,
     where,
-    deleteDoc
+    deleteDoc,
+    onSnapshot
 }

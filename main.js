@@ -8,7 +8,8 @@ import {
   where,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  onSnapshot
 } from "./firebase.js";
 
 const shopList = document.getElementById("shopList");
@@ -36,6 +37,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   loadShopsWithFoods();
+  listenToCart()
 });
 
 async function loadShopsWithFoods() {
@@ -90,7 +92,7 @@ async function loadShopsWithFoods() {
     });
 
     shopList.appendChild(shopDiv);
-  } 
+  }
   loader.style.display = "none";
   shopList.style.display = "block";
 }
@@ -124,6 +126,84 @@ async function addToCart(foodId, button) {
   } finally {
     button.disabled = false;
     button.innerText = "Add";
+  }
+}
+
+document.getElementById("cartBtn").onclick = () => {
+  Swal.fire({
+    title: "Your Cart",
+    html: `
+    <div id="cartLoader" class="cartLoader">
+      <div class="spinner spinnerSmall"></div>
+    </div>
+    <div id="cartItems"></div>
+  `,
+    showCloseButton: true,
+    confirmButtonText: "Checkout",
+    width: 420,
+    customClass: {
+      popup: 'cartPopup'
+    },
+    didOpen: renderCart
+  });
+};
+
+async function renderCart() {
+  const cartItemsDiv = document.getElementById("cartItems");
+  const cartLoader = document.getElementById("cartLoader");
+
+  cartItemsDiv.style.display = "none";
+  cartLoader.style.display = "flex";
+
+  try {
+    const cartRef = doc(db, "carts", currentUserId);
+    const cartSnap = await getDoc(cartRef);
+
+    if (!cartSnap.exists()) {
+      cartLoader.style.display = "none";
+      cartItemsDiv.style.display = "block";
+      cartItemsDiv.innerHTML = "<p>Cart is empty</p>";
+      return;
+    }
+
+    const cart = cartSnap.data();
+    const foodIds = Object.keys(cart);
+
+    const foodPromises = foodIds.map(id =>
+      getDoc(doc(db, "foods", id))
+    );
+
+    const foodSnaps = await Promise.all(foodPromises);
+
+    let total = 0;
+    let html = "";
+
+    foodSnaps.forEach((snap, index) => {
+      if (!snap.exists()) return;
+
+      const food = snap.data();
+      const qty = cart[foodIds[index]];
+      const price = food.price * qty;
+
+      total += price;
+
+      html += `
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span>${food.name} × ${qty}</span>
+          <strong>Rs ${price}</strong>
+        </div>
+      `;
+    });
+
+    html += `<hr><h3>Total: Rs ${total}</h3>`;
+
+    cartItemsDiv.innerHTML = html;
+
+  } catch (err) {
+    cartItemsDiv.innerHTML = "<p>Failed to load cart</p>";
+  } finally {
+    cartLoader.style.display = "none";
+    cartItemsDiv.style.display = "block";
   }
 }
 

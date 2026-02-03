@@ -2,16 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard | MealBuddy</title>
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
   <div class="topBar">
     <h1><i>Meal<b class="i">Buddy</b></i></h1>
-    <div>
-      <span id="username"></span>
-      <button id="logoutBtn" class="logout">Logout</button>
+    <div class="topBar-right">
+      <span id="username"><div class="spinner spinnerSmall"></div></span>
+      |
+      <i class="fa-solid fa-right-from-bracket logout" id="logoutBtn"></i>
     </div>
   </div>
   <h1 class="heading" style="margin-top: 24px;">Admin Dashboard</h1>
