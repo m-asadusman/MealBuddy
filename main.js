@@ -9,12 +9,43 @@ import {
   doc,
   getDoc,
   setDoc,
-  onSnapshot
+  updateDoc,
+  increment,
+  deleteField
 } from "./firebase.js";
 
 const shopList = document.getElementById("shopList");
 const loader = document.getElementById("loader");
+
 let currentUserId = null;
+let foodCache = {};
+const placeholder = './assets/fp.png';
+
+function showLoader() {
+  loader.style.display = "flex";
+  shopList.style.display = "none";
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+  shopList.style.display = "block";
+}
+
+function showCartLoader() {
+  const cartLoader = document.getElementById("cartLoader");
+  const cartItems = document.getElementById("cartItems");
+
+  if (cartLoader) cartLoader.style.display = "flex";
+  if (cartItems) cartItems.style.display = "none";
+}
+
+function hideCartLoader() {
+  const cartLoader = document.getElementById("cartLoader");
+  const cartItems = document.getElementById("cartItems");
+
+  if (cartLoader) cartLoader.style.display = "none";
+  if (cartItems) cartItems.style.display = "block";
+}
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -37,13 +68,10 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   loadShopsWithFoods();
-  listenToCart()
 });
 
 async function loadShopsWithFoods() {
-  loader.style.display = "flex";
-  shopList.style.display = "none";
-
+  showLoader();
   shopList.innerHTML = "";
 
   const shopSnap = await getDocs(collection(db, "shops"));
@@ -58,7 +86,7 @@ async function loadShopsWithFoods() {
     );
     const foodSnap = await getDocs(foodQuery);
 
-    if (foodSnap.empty) continue
+    if (foodSnap.empty) continue;
 
     const shopDiv = document.createElement("div");
     shopDiv.classList.add("card", "shop", "cardMain");
@@ -70,19 +98,15 @@ async function loadShopsWithFoods() {
       const foodDiv = document.createElement("div");
       foodDiv.classList.add("food");
 
-      const placeholder = './assets/fp.png';
-      const imgSrc = food.imageURL || placeholder;
-
       foodDiv.innerHTML = `
         <div class="foodAlign1">
-        <img class="foodImg" src="${imgSrc}" alt="food"/>
-        <p> ${food.name}</p>
+          <img class="foodImg" src="${food.imageURL || placeholder}" alt="food"/>
+          <p>${food.name}</p>
         </div>
         <div class="foodAlign2">
-        <strong> Rs ${food.price} </strong>
-        <button>Add</button>
+          <strong> Rs ${food.price} </strong>
+          <button>Add</button>
         </div>
-        
       `;
 
       const addBtn = foodDiv.querySelector("button");
@@ -93,54 +117,47 @@ async function loadShopsWithFoods() {
 
     shopList.appendChild(shopDiv);
   }
-  loader.style.display = "none";
-  shopList.style.display = "block";
+
+  hideLoader();
 }
 
 async function addToCart(foodId, button) {
   button.disabled = true;
   button.innerText = "Adding...";
 
+  const cartRef = doc(db, "carts", currentUserId);
+
   try {
-    const cartRef = doc(db, "carts", currentUserId);
-    const cartSnap = await getDoc(cartRef);
-
-    let cart = {};
-    if (cartSnap.exists()) cart = cartSnap.data();
-
-    cart[foodId] = (cart[foodId] || 0) + 1;
-    await setDoc(cartRef, cart);
-
-    Swal.fire({
-      icon: "success",
-      text: "Added to cart",
-      timer: 1000,
-      showConfirmButton: false
+    await updateDoc(cartRef, {
+      [foodId]: increment(1)
     });
-
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      text: "Failed to add item"
-    });
+  } catch {
+    await setDoc(cartRef, { [foodId]: 1 });
   } finally {
     button.disabled = false;
     button.innerText = "Add";
   }
+
+  Swal.fire({
+    icon: "success",
+    text: "Added to cart",
+    timer: 1000,
+    showConfirmButton: false
+  });
 }
 
 document.getElementById("cartBtn").onclick = () => {
   Swal.fire({
     title: "Your Cart",
     html: `
-    <div id="cartLoader" class="cartLoader">
-      <div class="spinner spinnerSmall"></div>
-    </div>
-    <div id="cartItems"></div>
-  `,
+      <div id="cartLoader" class="cartLoader">
+        <div class="spinner"></div>
+      </div>
+      <div id="cartItems"></div>
+    `,
     showCloseButton: true,
     confirmButtonText: "Checkout",
-    width: 420,
+    width: 600,
     customClass: {
       popup: 'cartPopup'
     },
@@ -149,62 +166,92 @@ document.getElementById("cartBtn").onclick = () => {
 };
 
 async function renderCart() {
+  showCartLoader();
+
   const cartItemsDiv = document.getElementById("cartItems");
-  const cartLoader = document.getElementById("cartLoader");
+  const cartRef = doc(db, "carts", currentUserId);
+  const cartSnap = await getDoc(cartRef);
 
-  cartItemsDiv.style.display = "none";
-  cartLoader.style.display = "flex";
+  if (!cartSnap.exists()) {
+    hideCartLoader();
+    cartItemsDiv.innerHTML = "<p>Cart is empty</p>";
+    return;
+  }
 
-  try {
-    const cartRef = doc(db, "carts", currentUserId);
-    const cartSnap = await getDoc(cartRef);
+  const cart = cartSnap.data();
+  const foodIds = Object.keys(cart);
 
-    if (!cartSnap.exists()) {
-      cartLoader.style.display = "none";
-      cartItemsDiv.style.display = "block";
-      cartItemsDiv.innerHTML = "<p>Cart is empty</p>";
-      return;
+  if (foodIds.length === 0) {
+    hideCartLoader();
+    cartItemsDiv.innerHTML = "<p>Cart is empty</p>";
+    return;
+  }
+
+  for (const id of foodIds) {
+    if (!foodCache[id]) {
+      const snap = await getDoc(doc(db, "foods", id));
+      if (snap.exists()) foodCache[id] = snap.data();
     }
+  }
 
-    const cart = cartSnap.data();
-    const foodIds = Object.keys(cart);
+  let total = 0;
+  let html = "";
 
-    const foodPromises = foodIds.map(id =>
-      getDoc(doc(db, "foods", id))
-    );
+  foodIds.forEach(id => {
+    const food = foodCache[id];
+    if (!food) return;
 
-    const foodSnaps = await Promise.all(foodPromises);
+    const qty = cart[id];
+    const price = food.price * qty;
+    total += price;
 
-    let total = 0;
-    let html = "";
-
-    foodSnaps.forEach((snap, index) => {
-      if (!snap.exists()) return;
-
-      const food = snap.data();
-      const qty = cart[foodIds[index]];
-      const price = food.price * qty;
-
-      total += price;
-
-      html += `
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-          <span>${food.name} × ${qty}</span>
+    html += `
+      <div class="cartItem">
+        <span>${food.name}</span>
+        <div class="cartItemBottom">
+          <div class="qtyBox">
+            <button class="minusBtn" data-id="${id}">-</button>
+            <span class="qty">${qty}</span>
+            <button class="plusBtn" data-id="${id}">+</button>
+          </div>
           <strong>Rs ${price}</strong>
         </div>
-      `;
-    });
+      </div>
+    `;
+  });
 
-    html += `<hr><h3>Total: Rs ${total}</h3>`;
+  html += `<hr><br><h4>Total: Rs ${total}</h4>`;
+  cartItemsDiv.innerHTML = html;
 
-    cartItemsDiv.innerHTML = html;
+  document.querySelectorAll(".plusBtn").forEach(btn => {
+    btn.onclick = () => updateCart(btn.dataset.id, 1);
+  });
 
-  } catch (err) {
-    cartItemsDiv.innerHTML = "<p>Failed to load cart</p>";
-  } finally {
-    cartLoader.style.display = "none";
-    cartItemsDiv.style.display = "block";
-  }
+  document.querySelectorAll(".minusBtn").forEach(btn => {
+    btn.onclick = () => updateCart(btn.dataset.id, -1);
+  });
+
+  hideCartLoader();
 }
 
+async function updateCart(foodId, change) {
+  showCartLoader();
 
+  const cartRef = doc(db, "carts", currentUserId);
+  const cartSnap = await getDoc(cartRef);
+
+  if (!cartSnap.exists()) return;
+
+  const cart = cartSnap.data();
+  const qty = cart[foodId] || 0;
+
+  if (change === 1) {
+    await updateDoc(cartRef, { [foodId]: increment(1) });
+  } else if (qty <= 1) {
+    await updateDoc(cartRef, { [foodId]: deleteField() });
+  } else {
+    await updateDoc(cartRef, { [foodId]: increment(-1) });
+  }
+
+  renderCart();
+}

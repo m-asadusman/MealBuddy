@@ -81,7 +81,7 @@ body {
 }
 
 .topBar h1 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--textColor);
 }
 
@@ -173,6 +173,10 @@ button {
   transform: translateY(-1px);
 }
 
+#loginBtn, #signupBtn, #email, #password, #name, #role{
+  font-size: 0.9em;
+}
+
 .secondary {
   background: transparent;
   border: 1px solid var(--mainColor);
@@ -217,7 +221,7 @@ button {
 .food button {
   box-shadow: 0 0 5px 2px #101010;
   padding: 8px 20px;
-  font-size: 0.9rem;
+  font-size: 0.9em;
   background: var(--mainColor);
   color: var(--textColor);
 }
@@ -340,6 +344,10 @@ main {
   max-width: 90%;
 }
 
+.swal2-title{
+  font-size: 23px;
+}
+
 .swal2-icon {
   transform: scale(0.75);
 }
@@ -384,6 +392,67 @@ main {
   padding-right: 8px;
 }
 
+.cartItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--dividerColor);
+  font-size: 1.1rem;
+}
+
+.cartItem:last-child {
+  border-bottom: none;
+}
+
+.cartItem span {
+  flex: 1;            /* takes remaining space */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qtyBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0;            /* fixed size */
+}
+
+.qtyBox button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: var(--cardBg);
+  color: var(--textColor);
+  border: 1px solid var(--borderColor);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qtyBox button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--mainColor);
+}
+
+.qtyBox .qty {
+  min-width: 22px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--mainColor);
+}
+
+.cartItem strong {
+  width: 90px;        /* fixed width */
+  text-align: right;  /* aligns price */
+}
+
 .spinner-wrap {
   min-height: 30vh;
   display: flex;
@@ -420,14 +489,6 @@ main {
   #shopList h2 {
     font-size: 23px;
     margin-top: 10px;
-  }
-
-  main {
-    margin-top: -400px;
-  }
-
-  .small {
-    margin-top: -520px;
   }
 
   .logo {
@@ -467,16 +528,6 @@ main {
 
   .swal2-icon {
     transform: scale(0.65);
-  }
-
-  .cartPopup {
-    max-height: 30vh !important;
-  }
-
-  #cartItems {
-    max-height: 15vh;
-    overflow-y: auto;
-    padding-right: 8px;
   }
 
   .foodImg {
