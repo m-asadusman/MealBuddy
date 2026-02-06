@@ -101,10 +101,12 @@ async function loadShopsWithFoods() {
       foodDiv.innerHTML = `
         <div class="foodAlign1">
           <img class="foodImg" src="${food.imageURL || placeholder}" alt="food"/>
-          <p>${food.name}</p>
+          <div>
+            <p> ${food.name}</p>
+            <strong> Rs ${food.price} </strong>
+          </div>
         </div>
         <div class="foodAlign2">
-          <strong> Rs ${food.price} </strong>
           <button>Add</button>
         </div>
       `;
@@ -207,20 +209,20 @@ async function renderCart() {
 
     html += `
       <div class="cartItem">
-        <span>${food.name}</span>
-        <div class="cartItemBottom">
-          <div class="qtyBox">
-            <button class="minusBtn" data-id="${id}">-</button>
-            <span class="qty">${qty}</span>
-            <button class="plusBtn" data-id="${id}">+</button>
-          </div>
-          <strong>Rs ${price}</strong>
+        <div class="cartItemInfo">
+          <span class="cartFoodName">${food.name}</span>
+          <strong class="cartFoodPrice">Rs ${price}</strong>
+        </div>
+        <div class="qtyBox">
+          <button class="minusBtn" data-id="${id}">-</button>
+          <span class="qty">${qty}</span>
+          <button class="plusBtn" data-id="${id}">+</button>
         </div>
       </div>
     `;
   });
 
-  html += `<hr><br><h4>Total: Rs ${total}</h4>`;
+  html += `<br><h4 style="color:var(--mainColor)">Total: Rs ${total}</h4>`;
   cartItemsDiv.innerHTML = html;
 
   document.querySelectorAll(".plusBtn").forEach(btn => {
@@ -240,7 +242,10 @@ async function updateCart(foodId, change) {
   const cartRef = doc(db, "carts", currentUserId);
   const cartSnap = await getDoc(cartRef);
 
-  if (!cartSnap.exists()) return;
+  if (!cartSnap.exists()) {
+    hideCartLoader();
+    return;
+  }
 
   const cart = cartSnap.data();
   const qty = cart[foodId] || 0;

@@ -9,15 +9,25 @@ import {
   query,
   where,
   getDocs,
-  deleteDoc
+  deleteDoc,
+  updateDoc
 } from "./firebase.js";
 
 const vendorContent = document.getElementById("vendorContent");
 const loader = document.getElementById("loader");
 
-onAuthStateChanged(auth, async (user) => {
+function showLoader() {
   loader.style.display = "flex";
   vendorContent.style.display = "none";
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+  vendorContent.style.display = "block";
+}
+
+onAuthStateChanged(auth, async (user) => {
+  showLoader()
 
   if (!user) {
     window.location.href = "./login.html";
@@ -35,8 +45,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   if (!vendor.verified) {
-    loader.style.display = "none";
-    vendorContent.style.display = "block";
+    hideLoader()
     vendorContent.className = 'card'
     vendorContent.innerHTML = `
       <h2 class="statusHead">Account Under Review</h2>
@@ -53,8 +62,7 @@ onAuthStateChanged(auth, async (user) => {
   const shopSnap = await getDocs(shopQuery);
 
   if (shopSnap.empty) {
-    loader.style.display = "none";
-    vendorContent.style.display = "block";
+    hideLoader()
 
     vendorContent.innerHTML = `
       <div class="card">
@@ -109,8 +117,7 @@ onAuthStateChanged(auth, async (user) => {
     </div>
   `;
 
-  loader.style.display = "none";
-  vendorContent.style.display = "block";
+  hideLoader()
 
   document.getElementById("addFoodBtn").onclick = async () => {
     const name = document.getElementById("foodName").value.trim();
@@ -129,8 +136,7 @@ onAuthStateChanged(auth, async (user) => {
     let imageURL = "";
 
     if (image) {
-      loader.style.display = "flex";
-      vendorContent.style.display = "none";
+      showLoader()
 
       try {
         const fd = new FormData();
@@ -161,11 +167,11 @@ onAuthStateChanged(auth, async (user) => {
         });
         return;
       } finally {
-        loader.style.display = "none";
-        vendorContent.style.display = "block";
+        hideLoader()
       }
     }
 
+    showLoader()
     await addDoc(collection(db, "foods"), {
       name,
       price,
@@ -178,8 +184,10 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("foodPrice").value = "";
     document.getElementById("foodImage").value = "";
 
-    loadFoods();
+    await loadFoods();
+    hideLoader()
   };
+
 
   async function loadFoods() {
     const foodList = document.getElementById("foodList");
@@ -208,14 +216,21 @@ onAuthStateChanged(auth, async (user) => {
       const placeholder = './assets/fp.png';
       const imgSrc = food.imageURL || placeholder;
 
-      div.innerHTML = `<div class="foodAlign1">
-        <img class="foodImg" src="${imgSrc}" alt="food"/>
-        <p> ${food.name}</p>
+      div.innerHTML = `
+        <div class="foodAlign1">
+          <img class="foodImg" src="${imgSrc}" alt="food"/>
+          <div>
+            <p> ${food.name}</p>
+            <strong> Rs ${food.price} </strong>
+          </div>
         </div>
         <div class="foodAlign2">
-        <strong> Rs ${food.price} </strong>
-        <button class="deleteBtn" data-id="${foodId}">Delete</button>
+          <button class="editBtn" data-id="${foodId}"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="deleteBtn" data-id="${foodId}"><i class="fa-regular fa-trash-can"></i></button>
         </div>`;
+
+      const editBtn = div.querySelector(".editBtn");
+      editBtn.onclick = () => editFood(foodId);
 
       const deleteBtn = div.querySelector(".deleteBtn");
       deleteBtn.onclick = () => deleteFood(foodId);
@@ -235,22 +250,94 @@ onAuthStateChanged(auth, async (user) => {
 
     if (!confirm.isConfirmed) return;
 
+    showLoader()
+
     try {
       await deleteDoc(doc(db, "foods", foodId));
 
       Swal.fire({
         icon: "success",
-        text: "Food deleted"
+        text: "Food deleted",
+        timer: 1000,
+        showConfirmButton: false
       });
 
-      loadFoods();
+      await loadFoods();
     } catch (err) {
       Swal.fire({
         icon: "error",
         text: "Failed to delete food"
       });
     }
+
+    hideLoader()
   }
+
+  async function editFood(foodId) {
+    try {
+      const foodRef = doc(db, "foods", foodId);
+      const foodSnap = await getDoc(foodRef);
+
+      if (!foodSnap.exists()) {
+        Swal.fire({
+          icon: "error",
+          text: "Food not found"
+        });
+        return;
+      }
+
+      const food = foodSnap.data();
+
+      const { value: formValues } = await Swal.fire({
+        title: "Edit Food",
+        html: `
+        <input id="editName" class="swal2-input" placeholder="Food name" value="${food.name}">
+        <input id="editPrice" type="number" class="swal2-input" placeholder="Price" value="${food.price}">
+      `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Update",
+        preConfirm: () => {
+          const name = document.getElementById("editName").value.trim();
+          const price = Number(document.getElementById("editPrice").value);
+
+          if (!name || price <= 0) {
+            Swal.showValidationMessage("Enter valid name and price");
+            return;
+          }
+
+          return { name, price };
+        }
+      });
+
+      if (!formValues) return;
+
+      showLoader()
+      await updateDoc(foodRef, {
+        name: formValues.name,
+        price: formValues.price,
+        updatedAt: Date.now()
+      });
+
+      Swal.fire({
+        icon: "success",
+        text: "Food updated",
+        timer: 1000,
+        showConfirmButton: false
+      });
+
+      await loadFoods();
+      hideLoader()
+
+    } catch (err) {
+      hideLoader()
+      Swal.fire({
+        icon: "error",
+        text: "Failed to edit food"
+      });
+    }
+  }
+
 
   loadFoods();
 });
